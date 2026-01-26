@@ -1,0 +1,9 @@
+===== MODEL CLASSIFICATION REPORT =====
+              precision    recall  f1-score   support
+
+           0       1.00      0.98      0.99      7720
+           1       0.46      0.99      0.63       131
+
+    accuracy                           0.98      7851
+   macro avg       0.73      0.99      0.81      7851
+weighted avg       0.99      0.98      0.98      7851

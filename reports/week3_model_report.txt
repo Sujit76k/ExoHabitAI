@@ -1,0 +1,15 @@
+===== WEEK 3 MODEL REPORT =====
+Accuracy: 0.9955419691759012
+
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00      7771
+           1       1.00      0.56      0.72        80
+
+    accuracy                           1.00      7851
+   macro avg       1.00      0.78      0.86      7851
+weighted avg       1.00      1.00      0.99      7851
+
+Confusion Matrix:
+[[7771    0]
+ [  35   45]]

@@ -1,7 +1,9 @@
-
 numpy
 pandas
 matplotlib
 seaborn
 scikit-learn
 joblib
+flask
+streamlit
+

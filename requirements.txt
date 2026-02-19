@@ -5,5 +5,7 @@ seaborn
 scikit-learn
 joblib
 flask
+flask-cors
+flasgger
 streamlit
-
+scipy

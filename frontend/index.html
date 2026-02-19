@@ -1,19 +1,183 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="style.css">
+<title>🚀 ExoHabitAI Dashboard</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#020617;
+    color:white;
+    text-align:center;
+    margin:0;
+}
+
+/* ===== Neural Background ===== */
+body::before{
+    content:"";
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:radial-gradient(circle at 20% 30%,#0ea5e933,transparent),
+               radial-gradient(circle at 80% 70%,#6366f133,transparent);
+    animation:moveBg 10s infinite alternate;
+    z-index:-1;
+}
+@keyframes moveBg{
+    from{transform:translateY(-20px)}
+    to{transform:translateY(20px)}
+}
+
+/* ===== Cards ===== */
+.card{
+    width:420px;
+    margin:40px auto;
+    background:#0f172a;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 0 20px #0ea5e933;
+    animation:fadeIn 1s ease;
+}
+
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(30px)}
+    to{opacity:1}
+}
+
+.ai-input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:8px;
+    border:1px solid #334155;
+    background:#020617;
+    color:white;
+}
+
+.ai-input:focus{
+    outline:none;
+    border-color:#22c55e;
+    box-shadow:0 0 10px #22c55e88;
+}
+
+.error-glow{
+    border-color:#ef4444 !important;
+    box-shadow:0 0 12px #ef4444aa;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(90deg,#06b6d4,#3b82f6);
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.warning-glow{
+    border-color:#facc15 !important;
+    box-shadow:0 0 10px #facc15aa;
+}
+
+.warning-text{
+    color:#facc15;
+    font-size:14px;
+}
+
+
+/* ===== Loader ===== */
+.loader{
+    display:none;
+    margin:20px auto;
+    border:4px solid #1e293b;
+    border-top:4px solid #22c55e;
+    border-right:4px solid #06b6d4;
+    border-radius:50%;
+    width:30px;
+    height:30px;
+    animation:spin 0.8s linear infinite;
+}
+@keyframes spin{
+    100%{transform:rotate(360deg)}
+}
+
+/* ===== Result ===== */
+#resultText{
+    margin-top:20px;
+    font-size:20px;
+}
+
+/* ===== Progress Bar ===== */
+.bar{
+    width:100%;
+    height:14px;
+    background:#1e293b;
+    border-radius:12px;
+    overflow:hidden;
+    margin-top:15px;
+    box-shadow: inset 0 0 8px #000;
+}
+
+.bar-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#22c55e,#06b6d4,#6366f1);
+    transition:width 1.2s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 0 15px #22c55e88;
+    animation:pulseBar 2s infinite;
+}
+
+@keyframes pulseBar{
+    0%{filter:brightness(1)}
+    50%{filter:brightness(1.4)}
+    100%{filter:brightness(1)}
+}
+
+.error-text{
+    color:#ef4444;
+}
+
+</style>
 </head>
+
 <body>
 
-<h2>Exoplanet Habitability Predictor</h2>
+<h1>🚀 ExoHabitAI — AI Prediction Dashboard</h1>
 
-<input id="pl_rade" placeholder="Planet Radius">
-<input id="pl_eqt" placeholder="Equilibrium Temp">
+<div class="card">
 
-<button onclick="predict()">Predict</button>
+<label>Planet Radius (Earth = 1)</label>
+<input id="pl_rade" class="ai-input" placeholder="e.g. 1.0">
 
-<p id="result"></p>
+<label>Equilibrium Temperature (Kelvin)</label>
+<input id="pl_eqt" class="ai-input" placeholder="e.g. 288">
+
+<p id="errorBox" class="warning-text"></p>
+
+
+<button onclick="predict()">Predict Habitability</button>
+
+<div id="loader" class="loader"></div>
+<p id="errorBox" class="error-text"></p>
+
+</div>
+
+<div class="card">
+
+<h2>Prediction Result</h2>
+<p id="resultText">Waiting for AI prediction...</p>
+
+<div class="bar">
+    <div id="scoreBar" class="bar-fill"></div>
+</div>
+
+</div>
 
 <script src="script.js"></script>
+
 </body>
 </html>

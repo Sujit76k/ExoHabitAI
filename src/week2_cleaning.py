@@ -11,6 +11,30 @@ from src.utils import ensure_dir_exists
 CLEANED_PATH = os.path.join("data", "processed", "cleaned_exoplanets.csv")
 FIG_DIR = os.path.join("reports", "figures")
 
+# =====================================================
+# ⭐ API CLEANING FUNCTION (USED BY BACKEND)
+# =====================================================
+def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Lightweight cleaning for API prediction.
+    Must match training preprocessing behavior.
+    """
+
+    df = df.copy()
+
+    # Convert numeric safely
+    for col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="ignore")
+
+    # Replace infinities
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+
+    # Fill missing numeric with 0 (simple safe rule)
+    num_cols = df.select_dtypes(include=["number"]).columns
+    df[num_cols] = df[num_cols].fillna(0)
+
+    return df
+
 
 def plot_missing_values(df: pd.DataFrame, save_path: str):
     missing_pct = (df.isna().mean() * 100).sort_values(ascending=False).head(25)

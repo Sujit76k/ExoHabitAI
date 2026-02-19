@@ -22,8 +22,6 @@ Activate environment:
 Windows:
 venv\Scripts\activate
 
-Mac/Linux:
-source venv/bin/activate
 
 ---
 

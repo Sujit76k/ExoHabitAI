@@ -2,247 +2,187 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>🚀 ExoHabitAI — NASA Mission Control</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🚀 ExoHabitAI — NASA 3D SPACE MISSION CONTROL</title>
+
+<!-- REAL WEBGL ENGINE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
 
 /* =====================================================
-   🌌 GLOBAL CORE
+🌌 GLOBAL
 ===================================================== */
 
 *{box-sizing:border-box;}
 
 body{
-    margin:0;
-    font-family:Arial,Helvetica,sans-serif;
-    background:#020617;
-    color:white;
-    overflow-x:hidden;
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#020617;
+color:#e2e8f0;
+overflow-x:hidden;
 }
 
-/* Neural Animated Background */
-body::before{
-    content:"";
-    position:fixed;
-    width:100%;
-    height:100%;
-    background:
-        radial-gradient(circle at 20% 30%,#0ea5e933,transparent),
-        radial-gradient(circle at 80% 70%,#6366f133,transparent);
-    animation:bgMove 18s infinite alternate ease-in-out;
-    z-index:-1;
-}
-
-@keyframes bgMove{
-    from{transform:translateY(-30px)}
-    to{transform:translateY(30px)}
+/* 3D CANVAS BACKGROUND */
+#space3d{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:-10;
 }
 
 /* =====================================================
-   🛰️ HEADER
+🛰️ HEADER
 ===================================================== */
 
 .header{
-    padding:20px;
-    text-align:center;
-    border-bottom:1px solid #1e293b;
-    background:#020617;
-    backdrop-filter:blur(8px);
+padding:20px;
+text-align:center;
+border-bottom:1px solid #1e293b;
+background:rgba(2,6,23,.6);
+backdrop-filter:blur(10px);
 }
 
 .header h1{
-    margin:0;
-    letter-spacing:1px;
+margin:0;
+color:#22c55e;
+text-shadow:0 0 12px #22c55eaa;
 }
 
 .status{
-    margin-top:8px;
-    font-size:13px;
-    color:#22c55e;
+font-size:13px;
+color:#22c55e;
+margin-top:6px;
 }
 
 /* =====================================================
-   🧩 GRID ENGINE
+🧩 GRID
 ===================================================== */
 
 .wrapper{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
-    gap:25px;
-    padding:25px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+gap:24px;
+padding:25px;
 }
 
 /* =====================================================
-   📦 CARD SYSTEM (GLASS AI STYLE)
+📦 HOLO CARDS
 ===================================================== */
 
 .card{
-    background:linear-gradient(180deg,#0f172a,#020617);
-    padding:22px;
-    border-radius:18px;
-    border:1px solid #1e293b;
-    box-shadow:0 0 20px #0ea5e922;
-    transition:.35s;
-    animation:fadeIn .7s ease;
+background:linear-gradient(180deg,rgba(15,23,42,.7),rgba(2,6,23,.7));
+padding:22px;
+border-radius:18px;
+border:1px solid #0ea5e944;
+box-shadow:0 0 20px #0ea5e922;
+backdrop-filter:blur(12px);
+transition:.3s;
 }
 
 .card:hover{
-    transform:translateY(-4px);
-    box-shadow:0 0 30px #22c55e33;
+transform:translateY(-4px);
+box-shadow:0 0 30px #22c55e33;
 }
 
-@keyframes fadeIn{
-    from{opacity:0;transform:translateY(15px)}
-    to{opacity:1}
-}
-
-/* =====================================================
-   🧪 INPUT FIELD DESIGN
-===================================================== */
-
+/* INPUT */
 .ai-input{
-    width:100%;
-    padding:12px;
-    margin:6px 0;
-    border-radius:10px;
-    border:1px solid #334155;
-    background:#020617;
-    color:white;
-    transition:.25s;
+width:100%;
+padding:12px;
+margin:6px 0;
+border-radius:10px;
+border:1px solid #334155;
+background:#020617;
+color:#e2e8f0;
 }
 
 .ai-input:focus{
-    outline:none;
-    border-color:#22c55e;
-    box-shadow:0 0 12px #22c55e88;
+outline:none;
+border-color:#22c55e;
+box-shadow:0 0 12px #22c55e88;
 }
 
-/* =====================================================
-   🚀 BUTTON
-===================================================== */
-
+/* BUTTON */
 button{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:12px;
-    margin-top:12px;
-    background:linear-gradient(90deg,#06b6d4,#3b82f6);
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-    transition:.3s;
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+margin-top:12px;
+background:linear-gradient(90deg,#06b6d4,#3b82f6);
+color:white;
+font-weight:bold;
+cursor:pointer;
 }
 
-button:hover{
-    transform:scale(1.03);
-    box-shadow:0 0 20px #06b6d488;
-}
-
-/* =====================================================
-   📊 RESULT BAR
-===================================================== */
-
+/* RESULT BAR */
 .bar{
-    width:100%;
-    height:14px;
-    background:#1e293b;
-    border-radius:12px;
-    overflow:hidden;
-    margin-top:12px;
+width:100%;
+height:14px;
+background:#1e293b;
+border-radius:12px;
+overflow:hidden;
+margin-top:12px;
 }
 
 .bar-fill{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg,#22c55e,#06b6d4,#6366f1);
-    transition:width 1.2s cubic-bezier(.4,0,.2,1);
-    box-shadow:0 0 15px #22c55e88;
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#22c55e,#06b6d4,#6366f1);
+transition:width 1.2s;
+box-shadow:0 0 15px #22c55eaa;
 }
 
-/* =====================================================
-   📊 STATS PANEL
-===================================================== */
-
-.stats{
-    display:flex;
-    gap:12px;
-}
-
+/* STATS */
+.stats{display:flex;gap:12px}
 .stat{
-    flex:1;
-    background:#020617;
-    padding:14px;
-    border-radius:12px;
-    text-align:center;
-    box-shadow: inset 0 0 10px #000;
+flex:1;
+background:#020617;
+padding:14px;
+border-radius:12px;
+text-align:center;
 }
 
-/* =====================================================
-   📋 TABLE
-===================================================== */
+/* TABLE */
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #334155}
+thead{color:#22c55e}
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-th,td{
-    padding:8px;
-    border-bottom:1px solid #334155;
-}
-
-thead{
-    color:#22c55e;
-}
-
-/* =====================================================
-   🧠 INFO PANEL
-===================================================== */
-
-.info{
-    font-size:14px;
-    line-height:1.6;
-}
-
-/* =====================================================
-   📡 LOADER
-===================================================== */
-
+/* LOADER */
 .loader{
-    display:none;
-    margin:12px auto;
-    border:4px solid #1e293b;
-    border-top:4px solid #22c55e;
-    border-right:4px solid #06b6d4;
-    border-radius:50%;
-    width:32px;
-    height:32px;
-    animation:spin .8s linear infinite;
+display:none;
+margin:12px auto;
+border:4px solid #1e293b;
+border-top:4px solid #22c55e;
+border-right:4px solid #06b6d4;
+border-radius:50%;
+width:32px;height:32px;
+animation:spin .8s linear infinite;
 }
 
-@keyframes spin{
-    100%{transform:rotate(360deg)}
-}
+@keyframes spin{100%{transform:rotate(360deg)}}
 
-canvas{
-    background:#020617;
-    border-radius:12px;
-}
+canvas{border-radius:12px}
 
 </style>
 </head>
 
 <body>
 
+<!-- REAL 3D SPACE ENGINE -->
+<canvas id="space3d"></canvas>
+
 <div class="header">
-<h1>🚀 ExoHabitAI — AI Habitability Mission Control</h1>
-<div class="status">🟢 Neural Core Online | Prediction Engine Active</div>
+<h1>🚀 ExoHabitAI — NASA 3D SPACE COMMAND</h1>
+<div class="status">🟢 Deep-Space Neural Engine Active</div>
 </div>
 
 <div class="wrapper">
 
-<!-- ================= INPUT PANEL ================= -->
+<!-- INPUT -->
 <div class="card">
 <h3>🪐 Planet Input</h3>
 
@@ -253,18 +193,20 @@ canvas{
 <input id="st_mass" class="ai-input" placeholder="Star Mass (Sun=1)">
 <input id="st_rad" class="ai-input" placeholder="Star Radius (Sun=1)">
 
+<p id="errorBox"></p>
+
 <button onclick="predict()">🚀 Predict Habitability</button>
 <div id="loader" class="loader"></div>
 </div>
 
-<!-- ================= RESULT PANEL ================= -->
+<!-- RESULT -->
 <div class="card">
 <h3>🤖 AI Result</h3>
-<p id="resultText">Waiting for prediction...</p>
+<p id="resultText">Waiting for neural prediction...</p>
 <div class="bar"><div id="scoreBar" class="bar-fill"></div></div>
 </div>
 
-<!-- ================= STATS PANEL ================= -->
+<!-- STATS -->
 <div class="card">
 <h3>📊 Dataset Statistics</h3>
 <div class="stats">
@@ -274,46 +216,233 @@ canvas{
 </div>
 </div>
 
-<!-- ================= RANK TABLE ================= -->
+<!-- TABLE -->
 <div class="card">
 <h3>🌍 Top Ranked Exoplanets</h3>
 <table id="rankTable">
 <thead>
-<tr>
-<th>Name</th>
-<th>Score</th>
-<th>Prediction</th>
-</tr>
+<tr><th>Name</th><th>Score</th><th>Prediction</th></tr>
 </thead>
 <tbody></tbody>
 </table>
 </div>
 
-<!-- ================= GRAPH PANEL ================= -->
+<!-- GRAPH -->
 <div class="card">
 <h3>📈 Habitability Graph</h3>
 <canvas id="habitChart" height="200"></canvas>
 </div>
 
-<!-- ================= SCIENCE INFO ================= -->
-<div class="card info">
-<h3>🧠 Scientific Feature Guide</h3>
+<div class="card" id="galacticHUD">
+<h3>🌌 Galactic Command Center</h3>
 
-<p><b>Planet Radius:</b> Earth-like worlds usually 0.5–2 Earth radii.</p>
-<p><b>Equilibrium Temperature:</b> Indicates surface energy balance.</p>
-<p><b>Orbital Period:</b> Affects climate stability cycles.</p>
-<p><b>Star Temperature:</b> Defines habitable zone distance.</p>
-<p><b>Star Mass:</b> Influences stellar lifespan.</p>
-<p><b>Star Radius:</b> Helps estimate luminosity exposure.</p>
+<div id="galacticStatus" style="font-size:13px;color:#06b6d4;margin-bottom:10px;">
+🛰️ Initializing Deep-Space Link...
+</div>
 
-<ul>
-<li>HSI — Habitability Score Index</li>
-<li>SCI — Stellar Compatibility Index</li>
-</ul>
+<canvas id="galacticRadar" height="220"></canvas>
 
 </div>
 
 </div>
+
+<script>
+
+/* =====================================================
+🚀 REAL 3D NASA SPACE ENGINE (WEBGL)
+===================================================== */
+
+const canvas = document.getElementById("space3d");
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+);
+
+const renderer = new THREE.WebGLRenderer({
+canvas:canvas,
+alpha:true
+});
+
+renderer.setSize(window.innerWidth,window.innerHeight);
+camera.position.z = 8;
+
+/* STARFIELD */
+const starsGeometry = new THREE.BufferGeometry();
+const starVertices = [];
+
+for(let i=0;i<2000;i++){
+starVertices.push(
+THREE.MathUtils.randFloatSpread(600),
+THREE.MathUtils.randFloatSpread(600),
+THREE.MathUtils.randFloatSpread(600)
+);
+}
+
+starsGeometry.setAttribute(
+'position',
+new THREE.Float32BufferAttribute(starVertices,3)
+);
+
+const starsMaterial = new THREE.PointsMaterial({
+color:0x22c55e,
+size:0.7
+});
+
+const starField = new THREE.Points(starsGeometry,starsMaterial);
+scene.add(starField);
+
+/* PLANET ORBIT */
+const planetGeo = new THREE.SphereGeometry(1,32,32);
+const planetMat = new THREE.MeshBasicMaterial({
+wireframe:true,
+color:0x22c55e
+});
+const planet = new THREE.Mesh(planetGeo,planetMat);
+scene.add(planet);
+
+
+
+/* =====================================================
+   🌌 LEVEL-1200 LIVE NASA HUD ENGINE
+   SAFE ADD-ON MODULE (NON-DESTRUCTIVE)
+===================================================== */
+
+const hudStatus = document.getElementById("hudStatus");
+
+let liveHUDInterval = null;
+
+/* ---------------------------------------
+   🛰️ HUD STATUS LOGGER
+--------------------------------------- */
+function setHUD(text){
+    if(!hudStatus) return;
+    hudStatus.innerText = "🛰️ " + text;
+}
+
+/* ---------------------------------------
+   🌍 LIVE RANK REFRESH (AUTO LOOP)
+--------------------------------------- */
+async function liveRankUpdate(){
+
+    try{
+        const res = await fetch(`${API_BASE}/rank?limit=10`);
+        if(!res.ok) return;
+
+        const json = await res.json();
+        if(json.status !== "success") return;
+
+        if(!rankTable) return;
+
+        rankTable.innerHTML = "";
+
+        json.data.forEach(p => {
+
+            const tr = document.createElement("tr");
+
+            const score = (p.habitability_score || 0) * 100;
+
+            tr.innerHTML = `
+                <td>${p.pl_name || "Unknown"}</td>
+                <td style="color:${score>70?"#22c55e":"#facc15"}">${score.toFixed(1)}%</td>
+                <td>${p.prediction ?? 0}</td>
+            `;
+
+            rankTable.appendChild(tr);
+        });
+
+        setHUD("Live Orbit Sync Active");
+
+    }catch(e){
+        console.log("HUD Rank Update Failed");
+        setHUD("Signal Lost — Retrying...");
+    }
+}
+
+/* ---------------------------------------
+   🤖 NEURAL SCORE GLOW EFFECT
+--------------------------------------- */
+function activateScoreGlow(){
+
+    if(!scoreBar) return;
+
+    scoreBar.style.boxShadow =
+        "0 0 25px #22c55e, 0 0 40px #06b6d4, 0 0 60px #6366f1";
+}
+
+/* ---------------------------------------
+   📡 RADAR PULSE (CANVAS EFFECT)
+--------------------------------------- */
+function radarPulse(){
+
+    if(!chartCanvas) return;
+
+    const ctx = chartCanvas.getContext("2d");
+
+    let radius = 0;
+
+    setInterval(()=>{
+        ctx.beginPath();
+        ctx.arc(40,40,radius,0,Math.PI*2);
+        ctx.strokeStyle="rgba(34,197,94,0.3)";
+        ctx.stroke();
+        radius+=2;
+        if(radius>40) radius=0;
+    },80);
+}
+
+/* ---------------------------------------
+   🚀 START LIVE NASA HUD
+--------------------------------------- */
+function activateLiveHUD(){
+
+    console.log("🚀 NASA LIVE HUD ACTIVATED");
+
+    setHUD("Deep Space Neural Link Established");
+
+    activateScoreGlow();
+    radarPulse();
+
+    if(liveHUDInterval) clearInterval(liveHUDInterval);
+
+    // ⭐ Auto refresh every 3 seconds
+    liveHUDInterval = setInterval(()=>{
+        liveRankUpdate();
+    },3000);
+}
+
+
+/* ---------------------------------------
+   🌌 AUTO START AFTER DASHBOARD BOOT
+--------------------------------------- */
+
+setTimeout(()=>{
+    activateLiveHUD();
+},2000);
+
+/* ANIMATION LOOP */
+function animate(){
+requestAnimationFrame(animate);
+
+starField.rotation.y += 0.0005;
+planet.rotation.y += 0.01;
+planet.rotation.x += 0.004;
+
+renderer.render(scene,camera);
+}
+
+animate();
+
+window.addEventListener("resize",()=>{
+camera.aspect = window.innerWidth/window.innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+</script>
 
 <script src="script.js"></script>
 

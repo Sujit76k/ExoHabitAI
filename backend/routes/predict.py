@@ -1,12 +1,8 @@
 from flask import Blueprint, request, jsonify
-import pandas as pd
 
-from backend.model_registry import get_model
-from src.week2_cleaning import clean_data
-from src.week2_feature_engineering import add_engineered_features
+from backend.services.prediction_service import predict_planet
 
 predict_bp = Blueprint("predict", __name__)
-
 
 # =====================================================
 # 🚀 SCIENTIFIC INPUT VALIDATION
@@ -30,7 +26,9 @@ def validate_inputs(data: dict):
             try:
                 val = float(data[key])
                 if val < min_v or val > max_v:
-                    errors.append(f"{key} outside scientific range [{min_v},{max_v}]")
+                    errors.append(
+                        f"{key} outside scientific range [{min_v},{max_v}]"
+                    )
             except Exception:
                 errors.append(f"{key} must be numeric")
 
@@ -38,86 +36,16 @@ def validate_inputs(data: dict):
 
 
 # =====================================================
-# ⭐ FEATURE ALIGNMENT
-# =====================================================
-
-def align_features_to_model(df, model):
-    """
-    Align dataframe columns with model training schema.
-    """
-
-    # Extract final estimator if pipeline
-    final_model = model
-    if hasattr(model, "named_steps"):
-        final_model = list(model.named_steps.values())[-1]
-
-    # Get expected feature order
-    try:
-        expected_cols = model.feature_names_in_
-    except AttributeError:
-        expected_cols = getattr(final_model, "feature_names_in_", [])
-
-    # Add missing columns
-    for col in expected_cols:
-        if col not in df.columns:
-            df[col] = 0
-
-    # Keep only expected columns
-    if len(expected_cols) > 0:
-        df = df[expected_cols]
-
-    return df
-
-
-# =====================================================
-# 🚀 FINAL PRO PREDICT ROUTE
+# 🚀 FINAL ADAPTIVE NEURAL PREDICT ROUTE
 # =====================================================
 
 @predict_bp.route("/predict", methods=["POST"])
 def predict():
     """
-    Predict Exoplanet Habitability
-    ---
-    tags:
-      - Prediction
-    consumes:
-      - application/json
-    parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          properties:
-            pl_rade:
-              type: number
-              example: 1.2
-            pl_eqt:
-              type: number
-              example: 290
-            pl_orbper:
-              type: number
-              example: 365
-            st_teff:
-              type: number
-              example: 5778
-            st_mass:
-              type: number
-              example: 1.0
-            st_rad:
-              type: number
-              example: 1.0
-    responses:
-      200:
-        description: Prediction result
+    Adaptive Neural Habitability Prediction API
     """
 
     try:
-        model = get_model()
-
-        if model is None:
-            return jsonify({"error": "Model not loaded"}), 500
-
         data = request.get_json()
 
         if not data:
@@ -134,38 +62,19 @@ def predict():
             }), 400
 
         # --------------------------------------------------
-        # 🧠 Build dataframe
+        # 🧠 CALL AI SERVICE (REAL SCORING ENGINE)
         # --------------------------------------------------
-        df = pd.DataFrame([data])
-
-        # Apply same pipeline as training
-        df = clean_data(df)
-        df = add_engineered_features(df)
-
-        # Align with model features
-        df = align_features_to_model(df, model)
+        result = predict_planet(data)
 
         # --------------------------------------------------
-        # 🤖 Predict
+        # 🚀 RESPONSE TO DASHBOARD
         # --------------------------------------------------
-        prediction = model.predict(df)[0]
-        prob = model.predict_proba(df)[0][1]
-
-        # --------------------------------------------------
-        # 📊 Include engineered insights (for dashboard)
-        # --------------------------------------------------
-        extra = {}
-        if "HSI" in df.columns:
-            extra["HSI"] = float(df["HSI"].iloc[0])
-        if "SCI" in df.columns:
-            extra["SCI"] = float(df["SCI"].iloc[0])
-
         return jsonify({
             "status": "success",
-            "prediction": int(prediction),
-            "habitability_score": float(prob),
-            "insights": extra,
-            "model": "ExoHabitAI-Week4-RandomForest"
+            "prediction": result["prediction"],
+            "habitability_score": result["habitability_score"],
+            "insights": result.get("insights", {}),
+            "model": "ExoHabitAI-AdaptiveNeural"
         })
 
     except Exception as e:

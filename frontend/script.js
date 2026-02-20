@@ -4,6 +4,7 @@
 
 const API_BASE = "http://127.0.0.1:5000";
 
+
 /* =====================================================
    DOM CACHE (ULTRA SAFE)
 ===================================================== */
@@ -29,6 +30,7 @@ const avgScoreEl = document.getElementById("avgscore");
 const rankTable = document.querySelector("#rankTable tbody");
 const chartCanvas = document.getElementById("habitChart");
 
+
 /* =====================================================
    SCIENTIFIC RULE ENGINE
 ===================================================== */
@@ -41,6 +43,7 @@ const rules = {
     st_mass: { min: 0.1, max: 5 },
     st_rad: { min: 0.1, max: 10 },
 };
+
 
 /* =====================================================
    UTILITIES
@@ -70,6 +73,7 @@ function animateBar(score){
         scoreBar.style.width = percent+"%";
     });
 }
+
 
 /* =====================================================
    VALIDATION ENGINE
@@ -105,6 +109,7 @@ function validateInputs(){
     return valid;
 }
 
+
 /* =====================================================
    PAYLOAD BUILDER
 ===================================================== */
@@ -118,8 +123,9 @@ function buildPayload(){
     return payload;
 }
 
+
 /* =====================================================
-   🤖 AI PREDICTION ENGINE (MISSION CONTROL SAFE)
+   🤖 AI PREDICTION ENGINE
 ===================================================== */
 
 let requestRunning=false;
@@ -127,6 +133,7 @@ let requestRunning=false;
 async function predict(){
 
     if(requestRunning) return;
+
     if(!validateInputs()){
         typeText(resultText,"❌ Invalid scientific input.");
         return;
@@ -163,6 +170,13 @@ async function predict(){
             `Prediction: ${prediction} | Habitability Score: ${(score*100).toFixed(2)}%`
         );
 
+        // ============================================
+        // 🚀 LIVE RANKING SYNC (LEVEL-1000)
+        // ============================================
+
+        await loadRanking();       // reload rank table
+        await loadStats();         // update stats panel
+
     }catch(err){
         console.error(err);
         typeText(resultText,"❌ AI Connection Failed.");
@@ -171,6 +185,7 @@ async function predict(){
     showLoader(false);
     requestRunning=false;
 }
+
 
 /* =====================================================
    📊 LOAD STATS
@@ -195,46 +210,79 @@ async function loadStats(){
     }
 }
 
+
 /* =====================================================
-   🌍 LOAD RANK TABLE (SMART DETECTION)
+   🌍 FIXED NASA RANK TABLE (FINAL)
 ===================================================== */
+
+/* =====================================================
+   🌍 LOAD RANK TABLE (FIXED FOR NEW API STRUCTURE)
+===================================================== */
+// =====================================================
+// 🌍 LOAD RANK TABLE (FIXED LIVE RANK SYNC)
+// =====================================================
 
 async function loadRanking(){
 
     if(!rankTable) return;
 
     try{
-        const res=await fetch(`${API_BASE}/rank`);
-        if(!res.ok) return;
 
-        const data=await res.json();
+        const res = await fetch(`${API_BASE}/rank?limit=10`);
 
-        rankTable.innerHTML="";
+        if(!res.ok){
+            console.log("Rank API failed");
+            return;
+        }
 
-        data.slice(0,10).forEach(p=>{
+        const json = await res.json();
 
-            const name = p.pl_name || p.name || "Unknown";
-            const score = p.habitability_score || p.score || 0;
-            const pred  = p.prediction ?? "-";
+        // 🔥 IMPORTANT FIX
+        if(json.status !== "success" || !json.data){
+            console.log("Invalid Rank Response");
+            return;
+        }
 
-            const tr=document.createElement("tr");
+        rankTable.innerHTML = "";
 
-            tr.innerHTML=`
+        json.data.forEach(planet => {
+
+            const name = planet.pl_name || "Unknown";
+            const score = (planet.habitability_score || 0) * 100;
+            const prediction = planet.prediction ?? 0;
+
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
                 <td>${name}</td>
-                <td>${(score*100).toFixed(1)}%</td>
-                <td>${pred}</td>
+                <td>${score.toFixed(1)}%</td>
+                <td>${prediction}</td>
             `;
 
             rankTable.appendChild(tr);
         });
 
-    }catch{
-        console.log("Ranking unavailable");
+        // 📊 UPDATE STATS PANEL
+        if(json.metadata){
+
+            if(totalEl) totalEl.innerText = json.metadata.total_rows ?? "--";
+            if(habitableEl) habitableEl.innerText = json.metadata.habitable_count ?? "--";
+
+            if(avgScoreEl && json.metadata.avg_score){
+                avgScoreEl.innerText =
+                    (json.metadata.avg_score * 100).toFixed(1) + "%";
+            }
+        }
+
+        console.log("🚀 LIVE Ranking Sync Complete");
+
+    }catch(e){
+        console.log("Ranking unavailable", e);
     }
 }
 
 /* =====================================================
-   📈 MINI GRAPH ENGINE (AI VISUAL)
+   📈 MINI GRAPH ENGINE
 ===================================================== */
 
 function drawGraph(){
@@ -262,6 +310,7 @@ function drawGraph(){
     ctx.stroke();
 }
 
+
 /* =====================================================
    LIVE API HEALTH CHECK
 ===================================================== */
@@ -275,6 +324,7 @@ async function checkAPI(){
     }
 }
 
+
 /* =====================================================
    INPUT EVENTS
 ===================================================== */
@@ -286,12 +336,111 @@ Object.values(inputs).forEach(input=>{
 });
 
 /* =====================================================
-   🚀 DASHBOARD BOOT SEQUENCE
+   🌌 GALACTIC COMMAND CENTER — LEVEL 1500
+   NON-DESTRUCTIVE ADDON
+===================================================== */
+
+const galacticCanvas = document.getElementById("galacticRadar");
+const galacticStatus = document.getElementById("galacticStatus");
+
+let galacticAngle = 0;
+
+/* -----------------------------------------
+   🛰️ STATUS TEXT ENGINE
+----------------------------------------- */
+function setGalacticStatus(text){
+    if(!galacticStatus) return;
+    galacticStatus.innerText = "🛰️ " + text;
+}
+
+/* -----------------------------------------
+   🌍 REAL RADAR ORBIT ANIMATION
+----------------------------------------- */
+function drawGalacticRadar(){
+
+    if(!galacticCanvas) return;
+
+    const ctx = galacticCanvas.getContext("2d");
+
+    const w = galacticCanvas.width;
+    const h = galacticCanvas.height;
+
+    ctx.clearRect(0,0,w,h);
+
+    const cx = w/2;
+    const cy = h/2;
+
+    // Radar rings
+    for(let r=40;r<100;r+=20){
+        ctx.beginPath();
+        ctx.arc(cx,cy,r,0,Math.PI*2);
+        ctx.strokeStyle="rgba(34,197,94,0.15)";
+        ctx.stroke();
+    }
+
+    // Orbit line
+    ctx.beginPath();
+    ctx.arc(cx,cy,80,0,Math.PI*2);
+    ctx.strokeStyle="#06b6d4";
+    ctx.stroke();
+
+    // Moving planet
+    const px = cx + Math.cos(galacticAngle)*80;
+    const py = cy + Math.sin(galacticAngle)*80;
+
+    ctx.beginPath();
+    ctx.arc(px,py,6,0,Math.PI*2);
+    ctx.fillStyle="#22c55e";
+    ctx.shadowBlur=20;
+    ctx.shadowColor="#22c55e";
+    ctx.fill();
+
+    galacticAngle += 0.02;
+}
+
+/* -----------------------------------------
+   🤖 NEURAL SIGNAL SCAN
+----------------------------------------- */
+function galacticPulse(){
+
+    if(!scoreBar) return;
+
+    scoreBar.style.transition="0.4s";
+    scoreBar.style.filter="brightness(1.2)";
+    setTimeout(()=>{
+        scoreBar.style.filter="brightness(1)";
+    },200);
+}
+
+/* -----------------------------------------
+   🚀 COMMAND CENTER BOOT SEQUENCE
+----------------------------------------- */
+function activateGalacticCommandCenter(){
+
+    console.log("🌌 GALACTIC COMMAND CENTER ONLINE");
+
+    setGalacticStatus("Deep-Space Neural Sync Established");
+
+    // Radar animation loop
+    setInterval(drawGalacticRadar,30);
+
+    // Neural pulse loop
+    setInterval(galacticPulse,2000);
+}
+
+/* -----------------------------------------
+   ⭐ AUTO START AFTER DASHBOARD LOAD
+----------------------------------------- */
+setTimeout(()=>{
+    activateGalacticCommandCenter();
+},2500);
+/* =====================================================
+   🚀 DASHBOARD BOOT SEQUENCE (FINAL)
 ===================================================== */
 
 window.onload=async ()=>{
     await checkAPI();
     await loadStats();
-    await loadRanking();
+    await loadRanking();   // ⭐ ONLY ONE RANK LOADER NOW
     drawGraph();
 };

@@ -37,7 +37,7 @@ Generate cleaned dataset, engineered features, trained model and ranking file.
 
 python -m src.week2_cleaning
 python -m src.week2_feature_engineering
-python -m src.week3_ml_pipeline
+python -m src.week3_prepare_ml
 python -m src.week4_model_comparison
 
 ---

@@ -24,9 +24,19 @@ def align_features_to_model(df: pd.DataFrame, model):
     except AttributeError:
         expected_cols = getattr(final_model, "feature_names_in_", [])
 
-    for col in expected_cols:
-        if col not in df.columns:
-            df[col] = 0
+    missing_cols = [c for c in expected_cols if c not in df.columns]
+
+    if missing_cols:
+        df = pd.concat(
+            [df, pd.DataFrame(0, index=df.index, columns=missing_cols)],
+            axis=1
+        )
+
+    # Ensure correct column order
+    df = df[expected_cols]
+
+    # Defragment dataframe (VERY IMPORTANT)
+    df = df.copy()
 
     if len(expected_cols) > 0:
         df = df[expected_cols]

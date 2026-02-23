@@ -9,3 +9,4 @@ flask-cors
 flasgger
 streamlit
 scipy
+flasgger

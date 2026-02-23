@@ -91,12 +91,11 @@ def load_raw_data(path: str = RAW_DATA_PATH) -> pd.DataFrame:
     # Load dataset
     df = pd.read_csv(
         path,
-        comment="#",          # ignore NASA metadata lines
+        comment="#",         
         sep=delimiter,
         engine="python",
         encoding="utf-8",
         on_bad_lines="skip",
-        low_memory=False
     )
 
     # Clean column names
